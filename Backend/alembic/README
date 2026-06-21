@@ -1,0 +1,8 @@
+Async Alembic environment.
+
+Generate the initial migration (after creating the database):
+
+    alembic revision --autogenerate -m "initial schema"
+    alembic upgrade head
+
+The sqlalchemy.url is injected at runtime from app.core.config.settings.DATABASE_URL.
