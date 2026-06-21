@@ -29,8 +29,9 @@ app/
   data/icd10.json     # bundled ICD-10 codes
 alembic/              # async migration environment
 seed.py               # initial data seeder
+start_backend.sh      # one-command startup script
 requirements.txt
-.env.example
+.env                  # environment configuration
 ```
 
 ## Setup
@@ -40,49 +41,46 @@ requirements.txt
 - Python 3.11+
 - PostgreSQL 16
 
-### 2. Install
+### 2. Configure Database
+
+Ensure PostgreSQL is running with a database `clinic_db` and user `clinic`/`clinic`. If not set up yet:
+```bash
+sudo -u postgres psql -c "CREATE USER clinic WITH PASSWORD 'clinic';"
+sudo -u postgres psql -c "CREATE DATABASE clinic_db OWNER clinic;"
+```
+
+### 3. Quick Start (Recommended)
+
+Use the provided startup script to automate environment creation, dependency installation, database seeding, and running the server:
 
 ```bash
-python -m venv .venv
+bash start_backend.sh
+```
+
+### 4. Manual Setup (Alternative)
+
+If you prefer to run things manually:
+
+```bash
+# 1. Create and activate virtual environment
+python3 -m venv .venv
 source .venv/bin/activate
+
+# 2. Install dependencies
 pip install -r requirements.txt
-```
 
-### 3. Configure
-
-```bash
-cp .env.example .env
-# edit .env: DATABASE_URL, SECRET_KEY, SMTP_*, FRONTEND_ORIGIN
-```
-
-`DATABASE_URL` example:
-
-```
-DATABASE_URL=postgresql+asyncpg://clinic:clinic@localhost:5432/clinic_db
-```
-
-### 4. Migrations
-
-```bash
-alembic revision --autogenerate -m "initial schema"
-alembic upgrade head
-```
-
-### 5. Seed initial data
-
-```bash
+# 3. Seed initial data (creates tables directly and adds demo data)
 python seed.py
 ```
 
-This also creates tables directly (handy for local dev without running Alembic) and prints the demo logins:
+This creates tables directly and prints the demo logins:
 
 - Doctor: `doctor` / `Doctor@123`
 - Receptionist: `reception` / `Reception@123`
 
-### 6. Run
-
 ```bash
-uvicorn app.main:app --reload
+# 4. Run the server
+uvicorn app.main:app --reload --port 8000
 ```
 
 Open:
